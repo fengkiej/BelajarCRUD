@@ -3,22 +3,27 @@
 	$curPass = $_POST['curPassword'];
 	$newPass = $_POST['newPassword'];
 
-	// connect to mongodb
-   	$m = new MongoClient();
-   	// select a database & col
-   	$db = $m->mDb;
-	$collection = $db->userInfo;
+	$data = array('pass' => $curPass, 'npass' => $newPass);
 
-	$userObj = $collection->findOne(array("user"=>$user));
-	$userPass = $userObj["pass"];
+	$curl = curl_init();
+	
+	curl_setopt_array($curl, array(
+    	CURLOPT_RETURNTRANSFER => 1,
+    	CURLOPT_URL => 'http://belajarrest.local/users/'.$user,
+    	//CURLOPT_USERAGENT => 'Codular Sample cURL Request',
+    	CURLOPT_CUSTOMREQUEST => "PUT",
+    	CURLOPT_POSTFIELDS => http_build_query($data)
+	));
 
-	if($curPass==$userPass){
-		$collection->update(array("user"=>$user), 
-     		array('$set'=>array("pass"=>$newPass)));
-		echo "change success!";
+	curl_exec($curl);
+
+	$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+	curl_close($curl);
+
+	if($httpcode == "200"){
 		header("Location: display.php");
     	exit;
-	} else {
-		echo "password incorrect";
-	}
+    } else {
+    	echo "Op failed";
+    }
 ?>

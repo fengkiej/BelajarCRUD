@@ -1,13 +1,10 @@
 <?php
-	// connect to mongodb
-   	$m = new MongoClient();
-   	// select a database & col
-   	$db = $m->mDb;
-	$collection = $db->userInfo;
+$jsonString = 'http://belajarrest.local/users/';
+$jsonData = file_get_contents($jsonString);
+$jsonObj = json_decode($jsonData, true);
 
-	$userDatas = $collection->find();
+$userDatas = $jsonObj["users"];
 ?>
-
 <html>
 <body>
 <table>
@@ -42,7 +39,7 @@
 		}
 	?>
 </table>
-<form action="create_form.php" method="post">
+<form action="create_form.php">
 	<button>create new</button>
 </form>
 </body>
